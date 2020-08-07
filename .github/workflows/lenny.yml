@@ -1,0 +1,17 @@
+name: Debian Lenny
+on:
+    push:
+        branches:
+            - 'master'
+    schedule:
+        - cron: '0 18 * * 1' # Weekly at 18:00 UTC Monday
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Build the Docker image for Debian Lenny
+              run: docker build . --file Dockerfile --tag r2-debian-lenny:$(date +%s)
+              working-directory: lenny
