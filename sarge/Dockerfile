@@ -1,5 +1,5 @@
 FROM debian/eol:sarge
-ARG TCC_COMMIT=4c9e3a5988b4281cba6add9ecc2cf1d6b4650bcf
+ARG TCC_COMMIT=3613a11454295ae2da39a5e3bce5159eba2d8c08
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -33,7 +33,8 @@ RUN curl -L -o make-4.3.tar.gz http://ftp.gnu.org/gnu/make/make-4.3.tar.gz && \
 RUN curl -L -o tinycc.tar.gz "https://repo.or.cz/tinycc.git/snapshot/${TCC_COMMIT}.tar.gz" && \
 	tar -zxvf tinycc.tar.gz && \
 	cd tinycc-*/ && \
-	./configure && \
+	sed -i "115s/.*/#elif 1/" lib/bcheck.c && \
+	./configure --cpu=x86 && \
 	make && \
 	make install
 
