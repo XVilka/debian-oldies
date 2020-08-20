@@ -1,0 +1,9 @@
+#!/bin/sh
+
+DOCKCMD="docker"
+# Prefer podman if installed
+if [ -x "$(command -v podman)" ]; then
+	DOCKCMD="podman"
+fi
+"${DOCKCMD}" build -t deb-potato-r2 . || exit 1
+
