@@ -46,26 +46,34 @@ RUN curl -L -o make-4.3.tar.gz http://ftp.gnu.org/gnu/make/make-4.3.tar.gz && \
 	make install
 
 COPY --from=tccbuilder /usr/local /usr/local
+# TinyCC doesn't support static builds, so we just copy the libc file
+COPY --from=tccbuilder /lib/ld-musl-i386.so.1 /lib/ld-musl-i386.so.1
 ENV PATH="/usr/local/bin:${PATH}"
 RUN tcc --version
 
 # R2 doesn't compile because of the old GCC
 # Thus we install TinyCC first
 # Old sed doesn't know "-i" option, thus using the intermediate file
-RUN curl -L -o tinycc.tar.gz "https://repo.or.cz/tinycc.git/snapshot/${TCC_COMMIT}.tar.gz" && \
-	tar -zxvf tinycc.tar.gz && \
-	cd tinycc-*/ && \
-	sed "115s/.*/#elif 1/" lib/bcheck.c > lib/bcheck.c.new && \
-	mv -f lib/bcheck.c.new lib/bcheck.c && \
-	./configure --cpu=x86 --cc=tcc && \
-	make && \
-	make install
+# FIXME: For some reason produced `tcc` gives 'Segmentation fault' when running
+#RUN curl -L -o tinycc.tar.gz "https://repo.or.cz/tinycc.git/snapshot/${TCC_COMMIT}.tar.gz" && \
+#	tar -zxvf tinycc.tar.gz && \
+#	cd tinycc-*/ && \
+#	sed "115s/.*/#elif 1/" lib/bcheck.c > lib/bcheck.c.new && \
+#	sed "132s/.*/#define HAVE_CTYPE		(0)/" lib/bcheck.c.new > lib/bcheck.c.new2 && \
+#	rm -f lib/bcheck.c.new && \
+#	mv -f lib/bcheck.c.new2 lib/bcheck.c && \
+#	./configure --cpu=x86 --cc=tcc && \
+#	make && \
+#	# Remove the Alpine-built TinyCC version first
+#	rm -rf /usr/local/* && \
+#	make install
+#RUN tcc --version
 
 RUN curl -L -o radare2.zip https://github.com/radareorg/radare2/archive/master.zip && \
 	unzip radare2.zip && \
 	cd radare2-master/ && \
-	CC=tcc ./configure --with-compiler=tcc && \
-	CC=tcc CS_COMMIT_ARCHIVE=1 make && \
+	CC=tcc HOST_CC=tcc ./configure --with-compiler=tcc && \
+	CC=tcc HOST_CC=tcc CS_COMMIT_ARCHIVE=1 make && \
 	make install
 
 RUN r2 -v && r2r -v

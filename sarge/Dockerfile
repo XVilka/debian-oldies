@@ -41,8 +41,8 @@ RUN curl -L -o tinycc.tar.gz "https://repo.or.cz/tinycc.git/snapshot/${TCC_COMMI
 RUN curl -L -o radare2.zip https://github.com/radareorg/radare2/archive/master.zip && \
 	unzip radare2.zip && \
 	cd radare2-master/ && \
-	CC=tcc ./configure --with-compiler=tcc && \
-	CC=tcc CS_COMMIT_ARCHIVE=1 make && \
+	CC=tcc HOST_CC=tcc ./configure --with-compiler=tcc && \
+	CC=tcc HOST_CC=tcc CS_COMMIT_ARCHIVE=1 make && \
 	make install
 
 RUN r2 -v && r2r -v

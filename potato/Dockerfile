@@ -18,7 +18,20 @@ RUN curl -L -o tinycc.tar.gz "https://repo.or.cz/tinycc.git/snapshot/${TCC_COMMI
 	make install
 
 RUN tcc --version
-RUN ldd $(which tcc)
+RUN ldd $(which tcc) || true
+
+# Debian Potato has no `unzip` package, so we compile it statically then copy to the container
+COPY unzip60.tar.gz unzip60.tar.gz
+RUN tar -zxvf unzip60.tar.gz && \
+	cd unzip60 && \
+	sed -i "s/LFLAGS1 =/LFLAGS1 = -static -no-pie/g" unix/Makefile && \
+	sed -i "s/CFLAGS=\"-O3 -Wall -DASM_CRC\"/CFLAGS=\"-O3 -static -no-pie -Wall -DASM_CRC\"/g" unix/Makefile && \
+	sed -i "s/CFLAGS=\"-O -Wall\"/CFLAGS=\"-O3 -static -no-pie -Wall\"/g" unix/Makefile && \
+	make -f unix/Makefile linux_noasm && \
+	make prefix=/usr/local -f unix/Makefile install
+
+RUN unzip -v
+RUN ldd $(which unzip) || true
 
 FROM debian/eol:potato
 ARG TCC_COMMIT=696b765437b4a9213e3883ff416034daaebc891c
@@ -26,9 +39,10 @@ ARG TCC_COMMIT=696b765437b4a9213e3883ff416034daaebc891c
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN echo "deb http://archive.debian.org/debian potato main" > /etc/apt/sources.list
-RUN echo "deb http://archive.debian.org/debian-security potato/updates main" >> /etc/apt/sources.list
-RUN echo "Acquire::Check-Valid-Until no;" > /etc/apt/apt.conf.d/99no-check-valid-until
-RUN apt-get update && apt-get install --yes --force-yes patch unzip libc6 build-essential pkg-config
+#RUN echo "deb http://archive.debian.org/debian-security potato/updates main" >> /etc/apt/sources.list
+RUN cat /etc/apt/apt.conf
+RUN echo "Acquire::Check-Valid-Until no;" >> /etc/apt/apt.conf
+RUN apt-get update && apt-get install --yes --force-yes patch libc6 build-essential
 
 # A binary from https://github.com/moparisthebest/static-curl/releases
 COPY curl-i386 /usr/bin/curl
@@ -46,26 +60,35 @@ RUN curl -L -o make-4.3.tar.gz http://ftp.gnu.org/gnu/make/make-4.3.tar.gz && \
 	make install
 
 COPY --from=tccbuilder /usr/local /usr/local
+# TinyCC doesn't support static builds, so we just copy the libc file
+COPY --from=tccbuilder /lib/ld-musl-i386.so.1 /lib/ld-musl-i386.so.1
 ENV PATH="/usr/local/bin:${PATH}"
 RUN tcc --version
 
 # R2 doesn't compile because of the old GCC
 # Thus we install TinyCC first
 # Old sed doesn't know "-i" option, thus using the intermediate file
-RUN curl -L -o tinycc.tar.gz "https://repo.or.cz/tinycc.git/snapshot/${TCC_COMMIT}.tar.gz" && \
-	tar -zxvf tinycc.tar.gz && \
-	cd tinycc-*/ && \
-	sed "115s/.*/#elif 1/" lib/bcheck.c > lib/bcheck.c.new && \
-	mv -f lib/bcheck.c.new lib/bcheck.c && \
-	./configure --cpu=x86 --cc=tcc && \
-	make && \
-	make install
+# FIXME: For some reason produced `tcc` gives 'Segmentation fault' when running
+#RUN curl -L -o tinycc.tar.gz "https://repo.or.cz/tinycc.git/snapshot/${TCC_COMMIT}.tar.gz" && \
+#	tar -zxvf tinycc.tar.gz && \
+#	cd tinycc-*/ && \
+#	sed "115s/.*/#elif 1/" lib/bcheck.c > lib/bcheck.c.new && \
+#	sed "132s/.*/#define HAVE_CTYPE		(0)/" lib/bcheck.c.new > lib/bcheck.c.new2 && \
+#	rm -f lib/bcheck.c.new && \
+#	mv -f lib/bcheck.c.new2 lib/bcheck.c && \
+#	./configure --cpu=x86 --cc=tcc && \
+#	make && \
+#	# Remove the Alpine-built TinyCC version first
+#	rm -rf /usr/local/* && \
+#	make install
+
+RUN tcc --version
 
 RUN curl -L -o radare2.zip https://github.com/radareorg/radare2/archive/master.zip && \
 	unzip radare2.zip && \
 	cd radare2-master/ && \
-	CC=tcc ./configure --with-compiler=tcc && \
-	CC=tcc CS_COMMIT_ARCHIVE=1 make && \
+	CC=tcc HOST_CC=tcc ./configure --with-compiler=tcc && \
+	CC=tcc HOST_CC=tcc CS_COMMIT_ARCHIVE=1 make && \
 	make install
 
 RUN r2 -v && r2r -v
