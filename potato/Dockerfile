@@ -1,5 +1,5 @@
 FROM i386/alpine:3.12 as tccbuilder
-ARG TCC_COMMIT=696b765437b4a9213e3883ff416034daaebc891c
+ARG TCC_COMMIT=53d815b8a0364a85b66c3b37884fca087b923267
 
 # Install the build dependencies
 RUN apk add --no-cache make m4 which patch curl pkgconfig \
@@ -34,7 +34,7 @@ RUN unzip -v
 RUN ldd $(which unzip) || true
 
 FROM debian/eol:potato
-ARG TCC_COMMIT=696b765437b4a9213e3883ff416034daaebc891c
+ARG TCC_COMMIT=53d815b8a0364a85b66c3b37884fca087b923267
 
 ENV DEBIAN_FRONTEND=noninteractive
 
