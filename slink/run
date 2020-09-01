@@ -1,0 +1,8 @@
+#!/bin/sh
+DOCKCMD="docker"
+# Prefer podman if installed
+if [ -x "$(command -v podman)" ]; then
+	DOCKCMD="podman"
+fi
+"${DOCKCMD}" run -it --entrypoint /bin/bash deb-slink-r2 "$@"
+
