@@ -63,6 +63,7 @@ COPY --from=tccbuilder /usr/local /usr/local
 # TinyCC doesn't support static builds, so we just copy the libc file
 COPY --from=tccbuilder /lib/ld-musl-i386.so.1 /lib/ld-musl-i386.so.1
 ENV PATH="/usr/local/bin:${PATH}"
+ENV CFLAGS="-std=c11 -D_POSIX_C_SOURCE=200809L"
 RUN tcc --version
 
 # R2 doesn't compile because of the old GCC
