@@ -1,5 +1,5 @@
 FROM i386/alpine:3.12 as tccbuilder
-ARG TCC_COMMIT=53d815b8a0364a85b66c3b37884fca087b923267
+ARG TCC_COMMIT=727e24cb0ac7b6f73658c5d9b88e35723f596fba
 
 # Install the build dependencies
 RUN apk add --no-cache make m4 which patch curl pkgconfig \
@@ -34,11 +34,12 @@ RUN unzip -v
 RUN ldd $(which unzip) || true
 
 FROM debian/eol:potato
-ARG TCC_COMMIT=53d815b8a0364a85b66c3b37884fca087b923267
+ARG TCC_COMMIT=727e24cb0ac7b6f73658c5d9b88e35723f596fba
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN echo "deb http://archive.debian.org/debian potato main" > /etc/apt/sources.list
+RUN echo "deb http://archive.debian.org/debian potato-proposed-updates main" >> /etc/apt/source.list
 #RUN echo "deb http://archive.debian.org/debian-security potato/updates main" >> /etc/apt/sources.list
 RUN cat /etc/apt/apt.conf
 RUN echo "Acquire::Check-Valid-Until no;" >> /etc/apt/apt.conf
@@ -63,7 +64,7 @@ COPY --from=tccbuilder /usr/local /usr/local
 # TinyCC doesn't support static builds, so we just copy the libc file
 COPY --from=tccbuilder /lib/ld-musl-i386.so.1 /lib/ld-musl-i386.so.1
 ENV PATH="/usr/local/bin:${PATH}"
-ENV CFLAGS="-std=c11 -D_POSIX_C_SOURCE=200809L"
+ENV CFLAGS="-D_POSIX_C_SOURCE=200809L"
 RUN tcc --version
 
 # R2 doesn't compile because of the old GCC

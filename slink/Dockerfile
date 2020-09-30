@@ -1,5 +1,5 @@
 FROM i386/alpine:3.12 as tccbuilder
-ARG TCC_COMMIT=53d815b8a0364a85b66c3b37884fca087b923267
+ARG TCC_COMMIT=727e24cb0ac7b6f73658c5d9b88e35723f596fba
 
 # Install the build dependencies
 RUN apk add --no-cache make m4 which patch curl pkgconfig \
@@ -47,7 +47,7 @@ RUN make --version
 RUN ldd $(which make) || true
 
 FROM mcandre/docker-debian-32bit:slink
-ARG TCC_COMMIT=53d815b8a0364a85b66c3b37884fca087b923267
+ARG TCC_COMMIT=727e24cb0ac7b6f73658c5d9b88e35723f596fba
 
 ENV DEBIAN_FRONTEND=noninteractive
 
