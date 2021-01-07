@@ -4,5 +4,5 @@ DOCKCMD="docker"
 if [ -x "$(command -v podman)" ]; then
 	DOCKCMD="podman"
 fi
-"${DOCKCMD}" run -it --entrypoint /bin/bash deb-etch-r2 "$@"
+"${DOCKCMD}" run -it --entrypoint /bin/bash deb-etch-rizin "$@"
 

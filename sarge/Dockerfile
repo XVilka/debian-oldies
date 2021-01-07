@@ -19,7 +19,7 @@ RUN curl --version
 # We disable certificate checks
 RUN echo "insecure" >> $HOME/.curlrc
 
-# R2 doesn't compile because of the old GNU Make
+# Rizin doesn't compile because of the old GNU Make
 # Thus we install custom make first
 RUN curl -L -o make-4.3.tar.gz http://ftp.gnu.org/gnu/make/make-4.3.tar.gz && \
 	tar -zxvf make-4.3.tar.gz && \
@@ -28,7 +28,7 @@ RUN curl -L -o make-4.3.tar.gz http://ftp.gnu.org/gnu/make/make-4.3.tar.gz && \
 	make && \
 	make install
 
-# R2 doesn't compile because of the old GCC
+# Rizin doesn't compile because of the old GCC
 # Thus we install TinyCC first
 RUN curl -L -o tinycc.tar.gz "https://repo.or.cz/tinycc.git/snapshot/${TCC_COMMIT}.tar.gz" && \
 	tar -zxvf tinycc.tar.gz && \
@@ -38,14 +38,14 @@ RUN curl -L -o tinycc.tar.gz "https://repo.or.cz/tinycc.git/snapshot/${TCC_COMMI
 	make && \
 	make install
 
-RUN curl -L -o radare2.zip https://github.com/radareorg/radare2/archive/master.zip && \
-	unzip radare2.zip && \
-	cd radare2-master/ && \
+RUN curl -L -o rizin.zip https://github.com/rizinorg/rizin/archive/dev.zip && \
+	unzip rizin.zip && \
+	cd rizin-dev/ && \
 	CC=tcc HOST_CC=tcc ./configure --with-compiler=tcc && \
-	CC=tcc HOST_CC=tcc CS_COMMIT_ARCHIVE=1 make && \
+	CC=tcc HOST_CC=tcc CS_COMMIT_ARCHIVE=1 make -j1 && \
 	make install
 
-RUN r2 -v && r2r -v
+RUN rizin -v && rz-test -v
 
 # TODO: Try to run tests
 

@@ -22,13 +22,13 @@ RUN curl -L -o Python-3.6.11.tgz https://www.python.org/ftp/python/3.6.11/Python
 	./configure && \
 	make install
 
-RUN curl -L -o radare2.zip https://github.com/radareorg/radare2/archive/master.zip && \
-	unzip radare2.zip && \
-	cd radare2-master/ && \
+RUN curl -L -o rizin.zip https://github.com/rizinorg/rizin/archive/dev.zip && \
+	unzip rizin.zip && \
+	cd rizin-dev/ && \
 	./configure && \
 	CS_COMMIT_ARCHIVE=1 make && \
 	make install
 
-RUN r2 -v && r2r -v
+RUN rizin -v && rz-test -v
 
 # TODO: Try to run tests

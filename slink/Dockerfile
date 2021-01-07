@@ -70,15 +70,15 @@ ENV PATH="/usr/local/bin:${PATH}"
 ENV CFLAGS="-std=c11 -D_POSIX_C_SOURCE=200809L"
 RUN tcc --version
 
-# R2 doesn't compile because of the old GCC
-RUN curl -L -o radare2.zip https://github.com/radareorg/radare2/archive/master.zip
-RUN unzip radare2.zip &> /dev/null && \
-	cd radare2-master && \
+# Rizin doesn't compile because of the old GCC
+RUN curl -L -o rizin.zip https://github.com/rizinorg/rizin/archive/dev.zip
+RUN unzip rizin.zip &> /dev/null && \
+	cd rizin-dev && \
 	CC=tcc HOST_CC=tcc ./configure --with-compiler=tcc && \
 	CC=tcc HOST_CC=tcc CS_COMMIT_ARCHIVE=1 make && \
 	make install
 
-RUN r2 -v && r2r -v
+RUN rizin -v && rz-test -v
 
 # TODO: Try to run tests
 

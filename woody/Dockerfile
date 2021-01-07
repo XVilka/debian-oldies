@@ -1,5 +1,5 @@
 FROM i386/alpine:3.12 as tccbuilder
-ARG TCC_COMMIT=727e24cb0ac7b6f73658c5d9b88e35723f596fba
+ARG TCC_COMMIT=cf8d9cf072efb80e5a56a642ea08698779520050
 
 # Install the build dependencies
 RUN apk add --no-cache make m4 which patch curl pkgconfig \
@@ -21,7 +21,7 @@ RUN tcc --version
 RUN ldd $(which tcc)
 
 FROM debian/eol:woody
-ARG TCC_COMMIT=727e24cb0ac7b6f73658c5d9b88e35723f596fba
+ARG TCC_COMMIT=cf8d9cf072efb80e5a56a642ea08698779520050
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -36,7 +36,7 @@ RUN curl --version
 # We disable certificate checks
 RUN echo "insecure" >> $HOME/.curlrc
 
-# R2 doesn't compile because of the old GNU Make
+# Rizin doesn't compile because of the old GNU Make
 # Thus we install custom make first
 RUN curl -L -o make-4.3.tar.gz http://ftp.gnu.org/gnu/make/make-4.3.tar.gz && \
 	tar -zxvf make-4.3.tar.gz && \
@@ -51,7 +51,7 @@ COPY --from=tccbuilder /lib/ld-musl-i386.so.1 /lib/ld-musl-i386.so.1
 ENV PATH="/usr/local/bin:${PATH}"
 RUN tcc --version
 
-# R2 doesn't compile because of the old GCC
+# Rizin doesn't compile because of the old GCC
 # Thus we install TinyCC first
 # Old sed doesn't know "-i" option, thus using the intermediate file
 # FIXME: For some reason produced `tcc` gives 'Segmentation fault' when running
@@ -69,14 +69,14 @@ RUN tcc --version
 #	make install
 #RUN tcc --version
 
-RUN curl -L -o radare2.zip https://github.com/radareorg/radare2/archive/master.zip && \
-	unzip radare2.zip && \
-	cd radare2-master/ && \
+RUN curl -L -o rizin.zip https://github.com/rizinorg/rizin/archive/dev.zip && \
+	unzip rizin.zip && \
+	cd rizin-dev/ && \
 	CC=tcc HOST_CC=tcc ./configure --with-compiler=tcc && \
 	CC=tcc HOST_CC=tcc CS_COMMIT_ARCHIVE=1 make && \
 	make install
 
-RUN r2 -v && r2r -v
+RUN rizin -v && rz-test -v
 
 # TODO: Try to run tests
 

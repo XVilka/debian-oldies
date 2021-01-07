@@ -5,5 +5,5 @@ DOCKCMD="docker"
 if [ -x "$(command -v podman)" ]; then
 	DOCKCMD="podman"
 fi
-"${DOCKCMD}" build -t deb-woody-r2 . || exit 1
+"${DOCKCMD}" build -t deb-woody-rizin . || exit 1
 
