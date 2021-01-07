@@ -13,5 +13,5 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Build the Docker image for Debian Potato
-              run: docker build . --file Dockerfile --tag r2-debian-potato:$(date +%s)
+              run: docker build . --file Dockerfile --tag rizin-debian-potato:$(date +%s)
               working-directory: potato

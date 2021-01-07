@@ -13,5 +13,5 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Build the Docker image for Debian Slink
-              run: docker build . --file Dockerfile --tag r2-debian-slink:$(date +%s)
+              run: docker build . --file Dockerfile --tag rizin-debian-slink:$(date +%s)
               working-directory: slink

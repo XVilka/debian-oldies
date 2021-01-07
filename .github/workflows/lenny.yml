@@ -13,5 +13,5 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Build the Docker image for Debian Lenny
-              run: docker build . --file Dockerfile --tag r2-debian-lenny:$(date +%s)
+              run: docker build . --file Dockerfile --tag rizin-debian-lenny:$(date +%s)
               working-directory: lenny

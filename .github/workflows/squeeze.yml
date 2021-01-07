@@ -13,5 +13,5 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Build the Docker image for Debian Squeeze
-              run: docker build . --file Dockerfile --tag r2-debian-squeeze:$(date +%s)
+              run: docker build . --file Dockerfile --tag rizin-debian-squeeze:$(date +%s)
               working-directory: squeeze

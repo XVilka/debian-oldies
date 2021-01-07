@@ -13,5 +13,5 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Build the Docker image for Debian Woody
-              run: docker build . --file Dockerfile --tag r2-debian-woody:$(date +%s)
+              run: docker build . --file Dockerfile --tag rizin-debian-woody:$(date +%s)
               working-directory: woody
