@@ -13,5 +13,5 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Build the Docker image for Debian Sarge
-              run: docker build . --file Dockerfile --tag r2-debian-sarge:$(date +%s)
+              run: docker build . --file Dockerfile --tag rizin-debian-sarge:$(date +%s)
               working-directory: sarge

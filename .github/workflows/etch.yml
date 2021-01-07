@@ -13,5 +13,5 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Build the Docker image for Debian Etch
-              run: docker build . --file Dockerfile --tag r2-debian-etch:$(date +%s)
+              run: docker build . --file Dockerfile --tag rizin-debian-etch:$(date +%s)
               working-directory: etch
