@@ -85,10 +85,9 @@ RUN tcc --version
 #	make install
 # RUN tcc --version
 
-#RUN curl -L -o rizin.zip https://github.com/rizinorg/rizin/archive/dev.zip
-# RUN unzip rizin.zip && \
-COPY rizin rizin-dev
-RUN cd rizin-dev/ && \
+RUN curl -L -o rizin.zip https://github.com/rizinorg/rizin/archive/dev.zip
+RUN unzip rizin.zip && \
+	cd rizin-dev/ && \
 	CC=tcc HOST_CC=tcc ./configure --with-compiler=tcc && \
 	CC=tcc HOST_CC=tcc CS_COMMIT_ARCHIVE=1 make && \
 	make install

@@ -21,10 +21,9 @@ RUN curl -L -o Python-3.6.11.tgz https://www.python.org/ftp/python/3.6.11/Python
 	./configure && \
 	make install
 
-#RUN curl -L -o rizin.zip https://github.com/rizinorg/rizin/archive/dev.zip && \
-#	unzip rizin.zip && \
-COPY rizin rizin-dev
-RUN cd rizin-dev/ && \
+RUN curl -L -o rizin.zip https://github.com/rizinorg/rizin/archive/dev.zip
+RUN unzip rizin.zip && \
+	cd rizin-dev/ && \
 	./configure && \
 	CS_COMMIT_ARCHIVE=1 make && \
 	make install
